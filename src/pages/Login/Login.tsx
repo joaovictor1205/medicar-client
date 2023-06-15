@@ -19,8 +19,8 @@ import {
 } from '../../utils/MUI-styles';
 import { REQUIRED_MESSAGE, loginSchema } from './schema/loginSchema';
 import { LoginType } from './types/types';
-import { api } from '../../utils/httpClient';
 import { CustomAlert } from '../../components';
+import { useAuthentication } from '../../hooks';
 
 const defaultTheme = createTheme();
 
@@ -28,11 +28,12 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorAlert, showErrorAlert] = useState(false);
   const [successAlert, showSuccessAlert] = useState(false);
+  const { login } = useAuthentication();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const submitHandler = (values: LoginType) => {
-    api.post('/users/login', { username: values.email, password: values.password })
+    login(values)
       .then(() => {
         showErrorAlert(false);
         showSuccessAlert(true);

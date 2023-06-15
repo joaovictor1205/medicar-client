@@ -13,21 +13,31 @@ import { VisibilityOff, Visibility } from '@mui/icons-material';
 
 import { useState } from 'react';
 import { Formik } from 'formik';
-import * as S from './styles';
+import * as S from './styles/styles';
 import {
   PrimaryButton, PrimaryTextField, SecondButton, PrimaryCheckbox,
 } from '../../utils/MUI-styles';
-import { REQUIRED_MESSAGE, loginSchema } from './loginSchema';
+import { REQUIRED_MESSAGE, loginSchema } from './schema/loginSchema';
+import { LoginType } from './types/types';
+import { api } from '../../utils/httpClient';
+import { CustomAlert } from '../../components';
 
 const defaultTheme = createTheme();
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [errorAlert, showErrorAlert] = useState(false);
+  const [successAlert, showSuccessAlert] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const submitHandler = () => {
-    console.log('form is submitted');
+  const submitHandler = (values: LoginType) => {
+    api.post('/users/login', { username: values.email, password: values.password })
+      .then(() => {
+        showErrorAlert(false);
+        showSuccessAlert(true);
+      })
+      .catch(() => showErrorAlert(true));
   };
 
   return (
@@ -48,7 +58,7 @@ function Login() {
             </Typography>
             <Formik
               initialValues={{ email: '', password: '' }}
-              onSubmit={submitHandler}
+              onSubmit={(values) => submitHandler(values)}
               validationSchema={loginSchema}
             >
               {({
@@ -121,6 +131,8 @@ function Login() {
                 </form>
               )}
             </Formik>
+            { errorAlert && <CustomAlert severity="error" title="Erro" text="Tente novamente" /> }
+            { successAlert && <CustomAlert severity="success" title="Sucesso" text="Redirecionando para Home" /> }
           </Box>
         </Container>
       </ThemeProvider>

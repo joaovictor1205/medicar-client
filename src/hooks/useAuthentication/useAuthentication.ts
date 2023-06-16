@@ -1,5 +1,5 @@
 import { LoginType } from '../../pages/Login/types/types';
-import { api } from '../../utils/httpClient';
+import { api } from '../../services/httpClient';
 
 function useAuthentication() {
   function login(values: LoginType) {

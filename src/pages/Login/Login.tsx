@@ -11,8 +11,9 @@ import {
 } from '@mui/material';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import * as S from './styles/styles';
 import {
   PrimaryButton, PrimaryTextField, SecondButton, PrimaryCheckbox,
@@ -20,25 +21,35 @@ import {
 import { REQUIRED_MESSAGE, loginSchema } from './schema/loginSchema';
 import { LoginType } from './types/types';
 import { CustomAlert } from '../../components';
-import { useAuthentication } from '../../hooks';
+import { AuthenticationContext } from '../../contexts';
 
 const defaultTheme = createTheme();
+
+const INITIAL_VALUES = {
+  email: '',
+  password: '',
+};
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorAlert, showErrorAlert] = useState(false);
   const [successAlert, showSuccessAlert] = useState(false);
-  const { login } = useAuthentication();
+  const { authenticate } = useContext(AuthenticationContext);
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const submitHandler = (values: LoginType) => {
-    login(values)
+    authenticate(values.email, values.password)
       .then(() => {
         showErrorAlert(false);
         showSuccessAlert(true);
+        navigate('/home');
       })
-      .catch(() => showErrorAlert(true));
+      .catch(() => {
+        showErrorAlert(true);
+        showSuccessAlert(false);
+      });
   };
 
   return (
@@ -58,7 +69,7 @@ function Login() {
               Medicar
             </Typography>
             <Formik
-              initialValues={{ email: '', password: '' }}
+              initialValues={INITIAL_VALUES}
               onSubmit={(values) => submitHandler(values)}
               validationSchema={loginSchema}
             >

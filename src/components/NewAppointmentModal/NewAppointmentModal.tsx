@@ -14,7 +14,7 @@ type Props = {
 }
 
 const INITIAL_VALUES = {
-  speciality: '',
+  specialty: '',
   doctor: '',
   date: '',
   hour: '',
@@ -61,23 +61,23 @@ function NewAppointmentModal(props: Props) {
               <FormControl
                 sx={{ marginBottom: '2rem' }}
                 fullWidth
-                error={touched.speciality && errors.speciality === REQUIRED_MESSAGE}
+                error={touched.specialty && errors.specialty === REQUIRED_MESSAGE}
               >
                 <InputLabel>Especialidade</InputLabel>
                 <Select
-                  value={values.speciality}
-                  name="speciality"
+                  value={values.specialty}
+                  name="specialty"
                   label="Especialidade"
                   onChange={handleChange}
                 >
                   {specialities.map((specialty: SpecialtyType) => (
-                    <MenuItem value={specialty.id}>
+                    <MenuItem value={specialty.id} key={specialty.id}>
                       {specialty.nome}
                     </MenuItem>
                   ))}
                 </Select>
                 {
-                    touched.speciality && errors.speciality === REQUIRED_MESSAGE && (
+                    touched.specialty && errors.specialty === REQUIRED_MESSAGE && (
                     <FormHelperText>{REQUIRED_MESSAGE}</FormHelperText>
                     )
                   }
@@ -96,7 +96,7 @@ function NewAppointmentModal(props: Props) {
                   onChange={handleChange}
                 >
                   {doctors.map((doctor: DoctorType) => (
-                    <MenuItem value={doctor.id}>
+                    <MenuItem value={doctor.id} key={doctor.id}>
                       {doctor.nome}
                     </MenuItem>
                   ))}

@@ -5,7 +5,6 @@ import { AuthenticationContext } from '../contexts';
 function AuthGuard({ children }: { children: JSX.Element }) {
   const auth = useContext(AuthenticationContext);
   const navigate = useNavigate();
-  console.log(auth.email);
 
   if (!auth.email) navigate('/');
 

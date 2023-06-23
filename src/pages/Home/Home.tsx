@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
@@ -9,11 +9,13 @@ import Logo from '../../assets/logo.svg';
 import { PrimaryButton, SecondButton } from '../../utils/MUI-styles';
 import { AppointmentsTable } from '../../components/AppointmentsTable';
 import { EmptyState } from '../../components/EmptyState';
+import { NewAppointmentModal } from '../../components/NewAppointmentModal';
 
 function Home() {
   const { logout, email } = useContext(AuthenticationContext);
   const navigate = useNavigate();
   const { data, isLoading } = useAppointments('/consultas/');
+  const [isOpen, setIsOpen] = useState(false);
 
   const logoutHandler = () => {
     logout();
@@ -67,7 +69,7 @@ function Home() {
         <Box sx={{ boxShadow: 'rgba(0, 0, 0, 0.15) 0.5px 1px 2px 2px', padding: '0.5rem 1rem 2rem 1rem', marginTop: '1rem' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography component="h2" variant="h6" sx={{ fontWeight: '700' }}> Consulta clínica </Typography>
-            <PrimaryButton variant="contained" size="small">
+            <PrimaryButton variant="contained" size="small" onClick={() => setIsOpen(true)}>
               <Add sx={{ marginRight: '1rem' }} />
               Nova consulta
             </PrimaryButton>
@@ -79,6 +81,7 @@ function Home() {
               : <AppointmentsTable />
           }
         </Box>
+        <NewAppointmentModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </>
     </DefaultLayout>
   );

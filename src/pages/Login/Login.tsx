@@ -13,12 +13,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   PrimaryButton, PrimaryTextField, SecondButton, PrimaryCheckbox,
 } from '../../utils/MUI-styles';
-import { REQUIRED_MESSAGE, loginSchema } from './schema/loginSchema';
+import { loginSchema } from './schema/loginSchema';
 import { LoginType } from './types/types';
 import { CustomAlert } from '../../components';
 import { AuthenticationContext } from '../../contexts';
 import Logo from '../../assets/logo.svg';
 import { DefaultLayout } from '../../layouts';
+import { REQUIRED_MESSAGE } from '../../constants/requiredMessage';
 
 const INITIAL_VALUES = {
   email: '',

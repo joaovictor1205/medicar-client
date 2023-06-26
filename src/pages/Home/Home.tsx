@@ -21,7 +21,6 @@ function Home() {
     logout();
     navigate('/');
   };
-  console.log(data);
 
   return (
     <DefaultLayout>
@@ -76,7 +75,7 @@ function Home() {
           {
             data?.length === 0
               ? <EmptyState />
-              : <AppointmentsTable />
+              : <AppointmentsTable data={data || []} />
           }
         </Box>
         <NewAppointmentModal isOpen={isOpen} setIsOpen={setIsOpen} />

@@ -6,9 +6,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { newAppointmentSchema } from './schema/newAppointmentSchema';
 import { REQUIRED_MESSAGE } from '../../constants/requiredMessage';
 import { PrimaryButton, SecondButton } from '../../utils/MUI-styles';
-import useAppointments from '../../hooks/useAppointments/useAppointments';
 import { ScheduleType, SpecialtyType } from './types';
 import { api } from '../../services/httpClient';
+import useSchedules from '../../hooks/useAppointments/useSchedules';
 
 type Props = {
     isOpen: boolean;
@@ -31,9 +31,9 @@ const INITIAL_VALUES = {
 
 function NewAppointmentModal(props: Props) {
   const { isOpen, setIsOpen } = props;
-  const { data: schedules } = useAppointments('/agendas');
+  const { data: schedules } = useSchedules('/agendas');
   const specialty: SpecialtyType[] = useMemo(() => [], []);
-  const [doctor, setDoctor] = useState([]);
+  const [doctor, setDoctor] = useState<ScheduleType[]>([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [scheduleId, setScheduleId] = useState<number>();
 

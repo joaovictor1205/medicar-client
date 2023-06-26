@@ -16,3 +16,10 @@ export type ScheduleType = {
     id: number;
     medico: DoctorType;
 }
+
+export type AppointmentType = {
+    dia: string;
+    horario: string;
+    id: number;
+    medico: DoctorType;
+}

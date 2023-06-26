@@ -1,7 +1,6 @@
 # medicar-client
-React | Typescript | Material UI | Styled Components
 
-
+## Instalação dos pacotes
 - npm install
 
 ## Rodando a aplicação 

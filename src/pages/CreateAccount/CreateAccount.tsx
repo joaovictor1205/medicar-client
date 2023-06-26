@@ -34,10 +34,10 @@ function CreateAccount() {
 
   const submitHandler = (values: CreateAccountType) => {
     if (values.confirmPassword !== values.password) {
-      showErrorAlert(true);
+      return showErrorAlert(true);
     }
 
-    api.post('/users')
+    return api.post('/users')
       .then(() => navigate('/'));
   };
 

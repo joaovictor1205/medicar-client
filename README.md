@@ -8,3 +8,6 @@
 
 ## Rodando os testes
 - npm test
+
+## Observação
+- Para a resolução foi utilizada a API Medicar

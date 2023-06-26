@@ -1,51 +1,44 @@
 import {
-  Box,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  Typography,
+  Box, IconButton, InputAdornment, Typography,
 } from '@mui/material';
-import { VisibilityOff, Visibility } from '@mui/icons-material';
-
-import { useContext, useState } from 'react';
 import { Formik } from 'formik';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import {
-  PrimaryButton, PrimaryTextField, SecondButton, PrimaryCheckbox,
-} from '../../utils/MUI-styles';
-import { loginSchema } from './schema/loginSchema';
-import { LoginType } from './types/types';
-import { CustomAlert } from '../../components';
-import { AuthenticationContext } from '../../contexts';
-import Logo from '../../assets/logo.svg';
+import { useState } from 'react';
 import { DefaultLayout } from '../../layouts';
+import Logo from '../../assets/logo.svg';
+import {
+  PrimaryButton, PrimaryTextField, SecondButton,
+} from '../../utils/MUI-styles';
 import { REQUIRED_MESSAGE } from '../../constants/requiredMessage';
+import { createAccountSchema } from './schema/createAccountSchema';
+import { CreateAccountType } from './types/types';
+import { CustomAlert } from '../../components';
+import { api } from '../../services/httpClient';
 
 const INITIAL_VALUES = {
   email: '',
+  name: '',
   password: '',
+  confirmPassword: '',
 };
 
-function Login() {
+function CreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorAlert, showErrorAlert] = useState(false);
-  const [successAlert, showSuccessAlert] = useState(false);
-  const { authenticate } = useContext(AuthenticationContext);
   const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
 
-  const submitHandler = (values: LoginType) => {
-    authenticate(values.email, values.password)
-      .then(() => {
-        showErrorAlert(false);
-        showSuccessAlert(true);
-        navigate('/home');
-      })
-      .catch(() => {
-        showErrorAlert(true);
-        showSuccessAlert(false);
-      });
+  const submitHandler = (values: CreateAccountType) => {
+    if (values.confirmPassword !== values.password) {
+      showErrorAlert(true);
+    }
+
+    api.post('/users')
+      .then(() => navigate('/'));
   };
 
   return (
@@ -75,7 +68,7 @@ function Login() {
         <Formik
           initialValues={INITIAL_VALUES}
           onSubmit={(values) => submitHandler(values)}
-          validationSchema={loginSchema}
+          validationSchema={createAccountSchema}
         >
           {({
             handleSubmit,
@@ -88,14 +81,27 @@ function Login() {
               <PrimaryTextField
                 margin="normal"
                 fullWidth
+                id="name"
+                label="Nome"
+                name="name"
+                onChange={handleChange}
+                value={values.name}
+                error={touched.name && errors.name === REQUIRED_MESSAGE}
+                helperText={touched.name && errors.name === REQUIRED_MESSAGE ? REQUIRED_MESSAGE : ''}
+              />
+
+              <PrimaryTextField
+                margin="normal"
+                fullWidth
                 id="email"
-                label="E-mail ou Login"
+                label="Email"
                 name="email"
                 onChange={handleChange}
                 value={values.email}
                 error={touched.email && errors.email === REQUIRED_MESSAGE}
                 helperText={touched.email && errors.email === REQUIRED_MESSAGE ? REQUIRED_MESSAGE : ''}
               />
+
               <PrimaryTextField
                 margin="normal"
                 fullWidth
@@ -121,9 +127,31 @@ function Login() {
                   ),
                 }}
               />
-              <FormControlLabel
-                control={<PrimaryCheckbox value="remember" color="primary" />}
-                label="Lembrar minha senha"
+
+              <PrimaryTextField
+                margin="normal"
+                fullWidth
+                name="confirmPassword"
+                label="Confirmar senha"
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                onChange={handleChange}
+                value={values.confirmPassword}
+                error={touched.confirmPassword && errors.confirmPassword === REQUIRED_MESSAGE}
+                helperText={touched.confirmPassword && errors.confirmPassword === REQUIRED_MESSAGE ? REQUIRED_MESSAGE : ''}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="change password visibility"
+                        onClick={handleClickShowConfirmPassword}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Box
                 sx={{
@@ -132,8 +160,8 @@ function Login() {
                   justifyContent: 'space-between',
                 }}
               >
-                <SecondButton fullWidth onClick={() => navigate('/create-account')}>
-                  Criar conta
+                <SecondButton fullWidth onClick={() => navigate('/')}>
+                  Cancelar
                 </SecondButton>
 
                 <PrimaryButton
@@ -141,17 +169,16 @@ function Login() {
                   variant="contained"
                   type="submit"
                 >
-                  Acessar
+                  Confirmar
                 </PrimaryButton>
               </Box>
             </form>
           )}
         </Formik>
-        { errorAlert && <CustomAlert severity="error" title="Erro" text="Tente novamente" /> }
-        { successAlert && <CustomAlert severity="success" title="Sucesso" text="Redirecionando para Home" /> }
+        { errorAlert && <CustomAlert severity="error" title="Erro" text="Senhas diferentes" /> }
       </Box>
     </DefaultLayout>
   );
 }
 
-export default Login;
+export default CreateAccount;

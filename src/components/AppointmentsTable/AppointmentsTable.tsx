@@ -3,19 +3,22 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
 import { Clear } from '@mui/icons-material';
+import { KeyedMutator } from 'swr';
 import { AppointmentType } from '../NewAppointmentModal/types';
 import { PrimaryButton } from '../../utils/MUI-styles';
 import { api } from '../../services/httpClient';
 
 type Props = {
   data: AppointmentType[];
+  mutate: KeyedMutator<AppointmentType[]>;
 };
 
 function AppointmentsTable(props: Props) {
-  const { data } = props;
+  const { data, mutate } = props;
 
   const removeAppointment = (id: number) => {
-    api.delete(`/consultas/${id}`);
+    api.delete(`/consultas/${id}`)
+      .then(() => mutate());
   };
 
   return (

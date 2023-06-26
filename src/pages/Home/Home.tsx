@@ -14,13 +14,14 @@ import { NewAppointmentModal } from '../../components/NewAppointmentModal';
 function Home() {
   const { logout, email } = useContext(AuthenticationContext);
   const navigate = useNavigate();
-  const { data } = useAppointments('/consultas/');
+  const { data, mutate } = useAppointments('/consultas/');
   const [isOpen, setIsOpen] = useState(false);
 
   const logoutHandler = () => {
     logout();
     navigate('/');
   };
+  mutate();
 
   return (
     <DefaultLayout>
@@ -75,7 +76,7 @@ function Home() {
           {
             data?.length === 0
               ? <EmptyState />
-              : <AppointmentsTable data={data || []} />
+              : <AppointmentsTable data={data || []} mutate={mutate} />
           }
         </Box>
         <NewAppointmentModal isOpen={isOpen} setIsOpen={setIsOpen} />

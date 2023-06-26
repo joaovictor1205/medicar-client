@@ -2,7 +2,10 @@ import {
   Paper,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from '@mui/material';
+import { Clear } from '@mui/icons-material';
 import { AppointmentType } from '../NewAppointmentModal/types';
+import { PrimaryButton } from '../../utils/MUI-styles';
+import { api } from '../../services/httpClient';
 
 type Props = {
   data: AppointmentType[];
@@ -10,6 +13,10 @@ type Props = {
 
 function AppointmentsTable(props: Props) {
   const { data } = props;
+
+  const removeAppointment = (id: number) => {
+    api.delete(`/consultas/${id}`);
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -35,7 +42,12 @@ function AppointmentsTable(props: Props) {
               <TableCell>{schedule.medico.nome}</TableCell>
               <TableCell>{schedule.dia}</TableCell>
               <TableCell>{schedule.horario}</TableCell>
-              <TableCell />
+              <TableCell>
+                <PrimaryButton variant="contained" size="small" onClick={() => removeAppointment(schedule.id)}>
+                  <Clear sx={{ marginRight: '1rem' }} />
+                  Desmarcar
+                </PrimaryButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

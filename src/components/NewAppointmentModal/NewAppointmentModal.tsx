@@ -41,7 +41,9 @@ function NewAppointmentModal(props: Props) {
 
   const submitHandler = (values: Form) => {
     api.post('/consultas', { agenda_id: scheduleId, horario: values.hour })
-      .then((res) => console.log(res))
+      .then(() => {
+        handleClose();
+      })
       .catch((error) => console.log(error));
   };
 

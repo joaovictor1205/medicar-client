@@ -2,15 +2,24 @@ import {
   Box, FormControl, FormHelperText, InputLabel, MenuItem, Modal, Select, Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
+import { useEffect, useMemo, useState } from 'react';
 import { newAppointmentSchema } from './schema/newAppointmentSchema';
 import { REQUIRED_MESSAGE } from '../../constants/requiredMessage';
 import { PrimaryButton, SecondButton } from '../../utils/MUI-styles';
 import useAppointments from '../../hooks/useAppointments/useAppointments';
-import { DoctorType, SpecialtyType } from './types';
+import { ScheduleType, SpecialtyType } from './types';
+import { api } from '../../services/httpClient';
 
 type Props = {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+}
+
+type Form = {
+  specialty: string;
+  doctor: string;
+  date: string;
+  hour: string;
 }
 
 const INITIAL_VALUES = {
@@ -22,16 +31,34 @@ const INITIAL_VALUES = {
 
 function NewAppointmentModal(props: Props) {
   const { isOpen, setIsOpen } = props;
-  const { data: specialities } = useAppointments('/especialidades/');
-  const { data: doctors } = useAppointments('/medicos/');
+  const { data: schedules } = useAppointments('/agendas');
+  const specialty: SpecialtyType[] = useMemo(() => [], []);
+  const [doctor, setDoctor] = useState([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [scheduleId, setScheduleId] = useState<number>();
 
   const handleClose = () => setIsOpen(!isOpen);
 
-  const submitHandler = (values: any) => {
-    console.log(values);
+  const submitHandler = (values: Form) => {
+    api.post('/consultas', { agenda_id: scheduleId, horario: values.hour })
+      .then((res) => console.log(res))
+      .catch((error) => console.log(error));
   };
 
-  console.log(doctors);
+  useEffect(() => {
+    if (!schedules) return;
+
+    schedules.map((schedule: ScheduleType) => {
+      if (specialty.includes(schedule.medico.especialidade)) return null;
+      return specialty.push(schedule.medico.especialidade);
+    });
+
+    if (selectedSpecialty === '') return;
+
+    setDoctor(schedules.filter((schedule: ScheduleType) => (
+      schedule.medico.especialidade.id === selectedSpecialty
+    )));
+  }, [schedules, selectedSpecialty, specialty]);
 
   return (
     <Modal
@@ -68,11 +95,14 @@ function NewAppointmentModal(props: Props) {
                   value={values.specialty}
                   name="specialty"
                   label="Especialidade"
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setSelectedSpecialty(e.target.value);
+                  }}
                 >
-                  {specialities.map((specialty: SpecialtyType) => (
-                    <MenuItem value={specialty.id} key={specialty.id}>
-                      {specialty.nome}
+                  {specialty.map((item: SpecialtyType) => (
+                    <MenuItem value={item.id} key={item.id}>
+                      {item.nome}
                     </MenuItem>
                   ))}
                 </Select>
@@ -95,9 +125,9 @@ function NewAppointmentModal(props: Props) {
                   label="Médico"
                   onChange={handleChange}
                 >
-                  {doctors.map((doctor: DoctorType) => (
-                    <MenuItem value={doctor.id} key={doctor.id}>
-                      {doctor.nome}
+                  {doctor?.map((item: ScheduleType) => (
+                    <MenuItem value={item.id} key={item.id}>
+                      {item.medico.nome}
                     </MenuItem>
                   ))}
                 </Select>
@@ -120,9 +150,11 @@ function NewAppointmentModal(props: Props) {
                   label="Data"
                   onChange={handleChange}
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {doctor?.map((item: ScheduleType) => (
+                    <MenuItem value={item.id} key={item.id}>
+                      {item.dia}
+                    </MenuItem>
+                  ))}
                 </Select>
                 {
                     touched.date && errors.date === REQUIRED_MESSAGE && (
@@ -143,9 +175,16 @@ function NewAppointmentModal(props: Props) {
                   label="Hora"
                   onChange={handleChange}
                 >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  {doctor?.map((item: ScheduleType) => (
+                    item.horarios.map((horario) => {
+                      setScheduleId(item.id);
+                      return (
+                        <MenuItem value={horario} key={horario}>
+                          {horario}
+                        </MenuItem>
+                      );
+                    })
+                  ))}
                 </Select>
                 {
                     touched.hour && errors.hour === REQUIRED_MESSAGE && (

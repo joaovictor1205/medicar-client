@@ -9,3 +9,10 @@ export type DoctorType = {
     nome: string;
     especialidade: SpecialtyType;
 }
+
+export type ScheduleType = {
+    dia: string;
+    horarios: string[];
+    id: number;
+    medico: DoctorType;
+}

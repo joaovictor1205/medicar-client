@@ -14,7 +14,7 @@ import { NewAppointmentModal } from '../../components/NewAppointmentModal';
 function Home() {
   const { logout, email } = useContext(AuthenticationContext);
   const navigate = useNavigate();
-  const { data, isLoading } = useAppointments('/consultas/');
+  const { data } = useAppointments('/consultas/');
   const [isOpen, setIsOpen] = useState(false);
 
   const logoutHandler = () => {
@@ -22,8 +22,6 @@ function Home() {
     navigate('/');
   };
   console.log(data);
-
-  if (isLoading) return <> Carregando... </>;
 
   return (
     <DefaultLayout>
@@ -76,7 +74,7 @@ function Home() {
           </Box>
 
           {
-            data.length === 0
+            data?.length === 0
               ? <EmptyState />
               : <AppointmentsTable />
           }
